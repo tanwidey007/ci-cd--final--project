@@ -16,3 +16,33 @@ jobs:
           docker system prune -af
           rm -rf /tmp/*
           echo "Cleanup complete!"
+
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: nose
+spec:
+  description: >-
+    A task that runs Python unit tests using nose.
+  workspaces:
+    - name: source
+      description: The workspace containing the source code.
+  params:
+    - name: args
+      type: string
+      description: Additional arguments to pass to nosetests
+      default: "-v"
+  steps:
+    - name: run-nose-tests
+      image: python:3.9-slim
+      workingDir: $(workspaces.source.path)
+      script: |
+        #!/bin/bash
+        set -e
+        echo "Installing dependencies..."
+        pip install --upgrade pip
+        if [ -f requirements.txt ]; then
+          pip install -r requirements.txt
+        fi
+        echo "Running nosetests..."
+        nosetests $(params.args)
