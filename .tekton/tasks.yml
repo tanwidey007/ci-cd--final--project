@@ -1,0 +1,18 @@
+name: Cleanup Job
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run cleanup
+        run: |
+          echo "Starting cleanup..."
+          docker system prune -af
+          rm -rf /tmp/*
+          echo "Cleanup complete!"
